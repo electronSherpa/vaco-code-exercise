@@ -1,0 +1,25 @@
+{
+  "name": "vaco-code-exercise",
+  "version": "1.0.0",
+  "description": "",
+  "main": "api.mjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon api.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/electronSherpa/vaco-code-exercise.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/electronSherpa/vaco-code-exercise/issues"
+  },
+  "homepage": "https://github.com/electronSherpa/vaco-code-exercise#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^6.9.0",
+    "nodemon": "^2.0.20"
+  }
+}
