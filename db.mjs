@@ -1,4 +1,7 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
+import autoIncrement from 'mongoose-auto-increment';
+
+console.log(autoIncrement)
 
 mongoose.connect(
     'mongodb://localhost:27017/vaco',
@@ -11,54 +14,109 @@ db.once('open', () => {
     console.log('Successfully connected to MongoDB using Mongoose!');
 });
 
-const entitySchema = mongoose.Schema({
-    name: { type: String, required: true },
+autoIncrement.initialize(db)
+
+const categorySchema = mongoose.Schema({
+  name: { type: String, required: true },
+})
+
+const postSchema = mongoose.Schema({
+    title: { type: String, required: true },
+    text: { type: String, required: true },
+    timeStamp: {type: Date, required: true},
+    categoryId: {type: Number, required: true},
 });
 
-const Entity = mongoose.model("Entity", entitySchema);
+categorySchema.plugin(autoIncrement.plugin, 'Category');
+postSchema.plugin(autoIncrement.plugin, 'Post');
 
-const createEntity = async (data) => {
+const Category = mongoose.model("Category", categorySchema);
+const Post = mongoose.model("Post", postSchema);
+
+
+const createPost = async (data) => {
     try {
-      const entity = new Entity(data);
-      const ent = await entity.save();
+      const post = new Post(data);
+      const ent = await post.save();
       return ent
     } catch(err) {
-      console.error(err)
+      throw new Error(err._message)
     } 
 }
 
-const findEntities = async (filters = {}) => {
+const findPosts = async (filters = {}) => {
   try {
-    const entities = await Entity.find(filters).exec();
-    return entities
+    const posts = await Post.find(filters).sort({timeStamp: -1}).exec();
+    return posts
   } catch(err) {
     console.error(err)
   } 
 }
 
-const updateEntity = async (id, data) => {
-  console.log(id)
-  console.log(data)
+const updatePost = async (id, data) => {
   try {
-    const ent = await Entity.findOneAndUpdate({_id: id}, data, {returnOriginal: false});
+    const ent = await Post.findOneAndUpdate({_id: id}, data, {returnOriginal: false});
     return ent
   } catch(err) {
     console.error(err)
   } 
 }
 
-const deleteEntity = async (id) => {
+const deletePost = async (id) => {
   try {
-    const ent = await Entity.deleteOne({_id: id});
+    const ent = await Post.deleteOne({_id: id});
     return ent
   } catch(err) {
     console.error(err)
   } 
+}
+
+const deletePosts = async (id) => {
+  try {
+    const ent = await Post.deleteMany();
+    return ent
+  } catch(err) {
+    console.error(err)
+  } 
+}
+
+const getCategories = async () => {
+  try {
+    const posts = await Category.find({}).exec();
+    return posts
+  } catch(err) {
+    console.error(err)
+  } 
+}
+
+const deleteCategories = async (id) => {
+  try {
+    const ent = await Category.deleteMany({});
+    return ent
+  } catch(err) {
+    console.error(err)
+  } 
+}
+
+const createCategories = async (data) => {
+  data.map(async (d) => {
+    try {
+      const new_cat = new Category(d);
+      const cat = await new_cat.save();
+      return cat
+    } catch(err) {
+      console.error(err)
+    } 
+  })
 }
 
 export { 
-  createEntity, 
-  findEntities, 
-  updateEntity, 
-  deleteEntity 
+  createPost, 
+  findPosts, 
+  updatePost, 
+  deletePost,
+  deletePosts,
+  getCategories,
+  createCategories,
+  deleteCategories
 };
